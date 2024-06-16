@@ -182,8 +182,8 @@ void create_scrDonnee(void)
 
     labelResultHeart = lv_label_create(scrDonnee);
     labelResultSpo2 = lv_label_create(scrDonnee);
-    lv_obj_align_to(labelResultSpo2, chart, LV_ALIGN_OUT_BOTTOM_MID, -100, 100);
-    lv_obj_align_to(labelResultHeart, chart, LV_ALIGN_OUT_BOTTOM_MID, 50, 100);
+    lv_obj_align_to(labelResultSpo2, chart, LV_ALIGN_CENTER, -100, 200);
+    lv_obj_align_to(labelResultHeart, chart, LV_ALIGN_CENTER, 50, 200);
 
     // bouton pour commencer a mesurer
     buttonPrincipal = lv_btn_create(scrDonnee);
@@ -201,43 +201,45 @@ void create_scrMesure(void)
     threadLvgl.lock();
 
     scrMesure = lv_obj_create(NULL);
+
+    // Initialiser les styles
+    static lv_style_t style_green;
+    lv_style_init(&style_green);
+    lv_style_set_bg_color(&style_green, lv_color_make(0, 255, 0));
+    lv_style_set_bg_opa(&style_green, LV_OPA_COVER);
+
+    static lv_style_t style_white;
+    lv_style_init(&style_white);
+    lv_style_set_bg_color(&style_white, lv_color_make(245, 245, 245));
+    lv_style_set_bg_opa(&style_white, LV_OPA_COVER);
+
+    // Créer les barres et labels
     barreSPO2 = lv_bar_create(scrMesure);
     labelBarreSPO2 = lv_label_create(scrMesure);
     barreHeartBeat = lv_bar_create(scrMesure);
     labelBarreHeartBeat = lv_label_create(scrMesure);
-    barreMesure= lv_bar_create(scrMesure);
-    
-
-    lv_style_init(&style_green);
-    lv_style_set_bg_color(&style_green, lv_color_make(0,255,0));
-    lv_style_set_bg_opa(&style_green, LV_OPA_COVER);
-
-lv_style_init(&style_white);
-    lv_style_set_bg_color(&style_white, lv_color_make(255,255,255));
-    lv_style_set_bg_opa(&style_white, LV_OPA_COVER);
-    
+    barreMesure = lv_bar_create(scrMesure);
 
     // barre et label du taux d'oxygene
     lv_label_set_text(labelBarreSPO2, "SPO2: 0%");
     lv_obj_set_size(barreSPO2, 200, 10);
-    lv_obj_set_pos(barreSPO2, lv_obj_get_width(scrMesure) / 2 - 100, 50);
-    lv_obj_align_to(labelBarreSPO2, barreSPO2, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
+    lv_obj_align(barreSPO2, LV_ALIGN_CENTER, 0, -60);
+    lv_obj_align_to(labelBarreSPO2, barreSPO2, LV_ALIGN_OUT_BOTTOM_MID, 0, 10); // ajuster l'espacement
     lv_bar_set_range(barreSPO2, 90, 100);
     lv_bar_set_value(barreSPO2, 0, LV_ANIM_ON);
 
     // barre et label de la frequence cardiaque
     lv_label_set_text(labelBarreHeartBeat, "Heartbeat: 0 times/min");
     lv_obj_set_size(barreHeartBeat, 200, 10);
-    lv_obj_set_pos(barreHeartBeat, lv_obj_get_width(scrMesure) / 2 - 100, 150);
-    lv_obj_align_to(labelBarreHeartBeat, barreHeartBeat, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
+    lv_obj_align(barreHeartBeat, LV_ALIGN_CENTER, 0, 30);
+    lv_obj_align_to(labelBarreHeartBeat, barreHeartBeat, LV_ALIGN_OUT_BOTTOM_MID, 0, 10); // ajuster l'espacement
     lv_bar_set_range(barreHeartBeat, 50, 200);
     lv_bar_set_value(barreHeartBeat, 0, LV_ANIM_ON);
 
     // bouton pour commencer a mesurer
     buttonMesure = lv_btn_create(scrMesure);
     lv_obj_add_event_cb(buttonMesure, event_handler_buttonMesure, LV_EVENT_ALL, NULL);
-    lv_obj_align_to(buttonMesure, labelBarreSPO2, LV_ALIGN_OUT_BOTTOM_MID, -40, 20);
-
+    lv_obj_align(buttonMesure, LV_ALIGN_CENTER, -60, 100);
     labelButtonMesure = lv_label_create(buttonMesure);
     lv_label_set_text(labelButtonMesure, "Start Mesure");
     lv_obj_center(labelButtonMesure);
@@ -245,17 +247,18 @@ lv_style_init(&style_white);
     // bouton pour commencer afficher les données
     buttonDonnee = lv_btn_create(scrMesure);
     lv_obj_add_event_cb(buttonDonnee, event_handler_buttonDonnee, LV_EVENT_ALL, NULL);
-    lv_obj_align_to(buttonDonnee, labelBarreHeartBeat, LV_ALIGN_OUT_BOTTOM_MID, -30, 20);
-
+    lv_obj_align(buttonDonnee, LV_ALIGN_CENTER, 60, 100);
     labelButtonDonnee = lv_label_create(buttonDonnee);
-    lv_label_set_text(labelButtonDonnee, "résultat");
+    lv_label_set_text(labelButtonDonnee, "resultat");
     lv_obj_center(labelButtonDonnee);
 
+    // Bar for measure progress
     lv_obj_set_size(barreMesure, 300, 10);
-    lv_obj_set_pos(barreMesure, lv_obj_get_width(scrMesure) / 2 -200, 10);
+    lv_obj_align(barreMesure, LV_ALIGN_CENTER, 0, -120);
     lv_bar_set_range(barreMesure, 0, 29);
     lv_obj_add_style(barreMesure, &style_green, LV_PART_INDICATOR);
     lv_obj_add_style(barreMesure, &style_white, LV_PART_MAIN);
+
     threadLvgl.unlock();
 }
 
